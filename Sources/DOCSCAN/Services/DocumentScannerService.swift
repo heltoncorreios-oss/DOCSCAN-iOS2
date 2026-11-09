@@ -35,14 +35,14 @@ final class DocumentScannerService: NSObject, ObservableObject {
     func start() async {
 
         // No simulador, não tenta acessar uma câmera física.
-        if isSimulator {
-            await MainActor.run {
-                self.isAuthorized = false
-                self.isRunning = false
-                self.errorMessage = "Você está no simulador. Importe uma imagem para testar a digitalização."
-            }
-            return
-        }
+       if isSimulator {
+    await MainActor.run {
+        self.isAuthorized = false
+        self.isRunning = false
+        self.errorMessage = nil
+    }
+    return
+}
 
         let granted: Bool
 
