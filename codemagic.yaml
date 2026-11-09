@@ -1,0 +1,16 @@
+workflows:
+  docscan-ios-unsigned-check:
+    name: DOCSCAN iOS - validação inicial sem assinatura
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: latest
+    scripts:
+      - name: Instalar XcodeGen
+        script: brew install xcodegen
+      - name: Gerar projeto Xcode
+        script: xcodegen generate
+      - name: Compilar para simulador iOS
+        script: xcodebuild -project DOCSCAN.xcodeproj -scheme DOCSCAN -sdk iphonesimulator -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+    artifacts:
+      - ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
