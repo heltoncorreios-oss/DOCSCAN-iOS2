@@ -30,12 +30,8 @@ struct ScannerPlaceholderView: View {
             }
             .toolbarBackground(.black, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .task {
-                await scanner.start()
-            }
-            .onDisappear {
-                scanner.stop()
-            }
+            .task { await scanner.start() }
+            .onDisappear { scanner.stop() }
             .alert("Atenção", isPresented: Binding(
                 get: { scanner.errorMessage != nil },
                 set: { if !$0 { scanner.clearError() } }
@@ -60,18 +56,13 @@ struct ScannerPlaceholderView: View {
                 VStack {
                     HStack {
                         Label(
-                            scanner.detectedRectangle == nil
-                                ? "Procure uma folha"
-                                : "Documento detectado",
-                            systemImage: scanner.detectedRectangle == nil
-                                ? "viewfinder"
-                                : "checkmark.viewfinder"
+                            scanner.detectedRectangle == nil ? "Procure uma folha" : "Documento detectado",
+                            systemImage: scanner.detectedRectangle == nil ? "viewfinder" : "checkmark.viewfinder"
                         )
                         .font(.subheadline.weight(.semibold))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
                         .background(.black.opacity(0.62), in: Capsule())
-
                         Spacer()
                     }
                     .padding(.top, 18)
@@ -82,7 +73,6 @@ struct ScannerPlaceholderView: View {
                     VStack(spacing: 18) {
                         HStack(spacing: 18) {
                             Image(systemName: "minus.magnifyingglass")
-
                             Slider(
                                 value: Binding(
                                     get: { Double(scanner.zoomFactor) },
@@ -90,9 +80,7 @@ struct ScannerPlaceholderView: View {
                                 ),
                                 in: 1...4
                             )
-
                             Image(systemName: "plus.magnifyingglass")
-
                             Text(String(format: "%.1fx", scanner.zoomFactor))
                                 .font(.caption.monospacedDigit().weight(.semibold))
                                 .frame(width: 42, alignment: .trailing)
@@ -100,16 +88,10 @@ struct ScannerPlaceholderView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24)
 
-                        Button {
-                            scanner.capture()
-                        } label: {
+                        Button { scanner.capture() } label: {
                             ZStack {
-                                Circle()
-                                    .stroke(.white, lineWidth: 5)
-                                    .frame(width: 76, height: 76)
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 62, height: 62)
+                                Circle().stroke(.white, lineWidth: 5).frame(width: 76, height: 76)
+                                Circle().fill(.white).frame(width: 62, height: 62)
                             }
                         }
                         .accessibilityLabel("Capturar documento")
@@ -159,33 +141,10 @@ struct ScannerPlaceholderView: View {
     }
 
     private func capturedPreview(_ image: UIImage) -> some View {
-        VStack(spacing: 18) {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(12)
-
-            Text("Imagem capturada. A próxima etapa adicionará o ajuste dos cantos e a correção de perspectiva.")
-                .font(.footnote)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.8))
-                .padding(.horizontal)
-
-            HStack(spacing: 14) {
-                Button("Capturar novamente") {
-                    scanner.retake()
-                }
-                .buttonStyle(.bordered)
-
-                Button("Concluir") {
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(DocscanTheme.blue)
-            }
-            .padding(.bottom, 24)
-        }
-        .padding(.top, 12)
+        DocumentCropEditorView(
+            image: image,
+            onRetake: { scanner.retake() },
+            onComplete: { dismiss() }
+        )
     }
 }
