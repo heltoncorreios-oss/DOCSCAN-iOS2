@@ -52,12 +52,10 @@ struct DocumentPerspectiveCorrector {
         }
 
         let filter = CIFilter.perspectiveCorrection()
-        filter.inputImage = input
-        filter.topLeft = CIVector(cgPoint: coreImagePoint(corners.topLeft))
-        filter.topRight = CIVector(cgPoint: coreImagePoint(corners.topRight))
-        filter.bottomRight = CIVector(cgPoint: coreImagePoint(corners.bottomRight))
-        filter.bottomLeft = CIVector(cgPoint: coreImagePoint(corners.bottomLeft))
-
+        filter.topLeft = coreImagePoint(corners.topLeft)
+filter.topRight = coreImagePoint(corners.topRight)
+filter.bottomRight = coreImagePoint(corners.bottomRight)
+filter.bottomLeft = coreImagePoint(corners.bottomLeft)
         guard let output = filter.outputImage else {
             throw PerspectiveError.correctionFailed
         }
